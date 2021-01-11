@@ -89,6 +89,7 @@
     "build/module",
     "!**/*.spec.*",
     "!**/*.json",
+    "!**/__tests__",
     "CHANGELOG.md",
     "LICENSE",
     "README.md"
