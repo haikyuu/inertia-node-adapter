@@ -1,4 +1,4 @@
-![example workflow name](https://github.com/haikyuu/inertia-node-adapter/test-and-build/badge.svg)
+![example workflow name](https://github.com/haikyuu/inertia-node-adapter/workflows/test-and-build/badge.svg)
 
 # inertia-node-adapter
 
