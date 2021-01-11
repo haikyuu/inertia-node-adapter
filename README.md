@@ -1,3 +1,5 @@
+![example workflow name](https://github.com/haikyuu/inertia-node-adapter/test-and-build/badge.svg)
+
 # inertia-node-adapter
 
 Inertia adapter for nodejs - supports Express and Koa.
