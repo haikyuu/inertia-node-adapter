@@ -11,8 +11,8 @@ function skip(skip = true) {
 
 const cookies = {
   koa: 'koa.sess',
-  express: 'connect.sid'
-}
+  express: 'connect.sid',
+};
 describe('Inertia adapter', () => {
   afterEach(async ({ koa }) => {
     koa.sandbox.reset();
@@ -24,8 +24,8 @@ describe('Inertia adapter', () => {
     const result = await fetch(`http://localhost:${port}/home`, {
       headers: {},
     });
-    const html = await result.text()
-    expect(html).toMatchSnapshot()
+    const html = await result.text();
+    expect(html).toMatchSnapshot();
   });
 
   it('responds with a json response with encoded page object when inertia header is present and version is the same', async ({
@@ -105,7 +105,9 @@ describe('Inertia adapter', () => {
       headers: { 'X-Inertia': 'true', 'X-Inertia-Version': '1' },
     });
     // flash messages are stored in a cookie
-    expect(result.headers.get('set-cookie')?.startsWith(cookies[type])).toBe(true);
+    expect(result.headers.get('set-cookie')?.startsWith(cookies[type])).toBe(
+      true
+    );
     const jsonResult = await result.json();
     expect(jsonResult).toMatchObject({
       ...koa.metadata.pages.home,

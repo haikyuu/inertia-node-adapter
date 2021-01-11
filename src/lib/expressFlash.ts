@@ -90,7 +90,7 @@ const flash: FlashMiddleware = <FlashMessageType extends string = string>() => {
       flashAll() {
         const messagesRecord: MessagesRecord = req.session!.flashMessages || {};
 
-        delete req.session!.flashMessages
+        delete req.session!.flashMessages;
         return messagesRecord;
       }
     }

@@ -12,7 +12,7 @@ export default function getServer(type: serverType, options: ServerOptions) {
   if (type === 'koa') {
     return koaServer(options);
   } else if (type === 'express') {
-    return expressServer(options)
+    return expressServer(options);
   }
   throw new Error('not supported server type');
 }

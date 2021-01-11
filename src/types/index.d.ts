@@ -1,19 +1,18 @@
-import { Inertia } from "../lib/expressAdapter";
-import { Flash } from "../lib/expressFlash";
+import { Inertia } from '../lib/expressAdapter';
+import { Flash } from '../lib/expressFlash';
 
 type FlashMessages = 'info' | 'error' | 'success';
 declare global {
-    namespace Express {
-        interface Request {
-            Inertia: Inertia
-            flash: Flash<FlashMessages>
-        }
+  namespace Express {
+    interface Request {
+      Inertia: Inertia;
+      flash: Flash<FlashMessages>;
     }
+  }
 }
 
-
 declare module 'express-session' {
-    export interface SessionData {
-        flashMessages: Record<string, string[]>
-    }
+  export interface SessionData {
+    flashMessages: Record<string, string[]>;
+  }
 }
