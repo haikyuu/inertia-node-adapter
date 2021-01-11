@@ -1,6 +1,6 @@
 {
   "name": "inertia-node-adapter",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Inertia adapter for nodejs - supports Express and Koa",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
