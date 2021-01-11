@@ -33,7 +33,7 @@ export const headers = {
     xInertiaPartialData: 'x-inertia-partial-data',
     xInertiaPartialComponent: 'x-inertia-partial-component',
 };
-const inertia: (
+const inertiaExpressAdapter: (
     options: Options
 ) => RequestHandler = function ({ version, html, flashMessages }) {
     return (req, res, next) => {
@@ -134,6 +134,7 @@ const inertia: (
                         })
                         .send(JSON.stringify(_page));
                 } else {
+                    log("Sending the default html as no inertia header is present")
                     res
                         .status(_statusCode)
                         .set({
@@ -161,4 +162,4 @@ const inertia: (
         return next();
     };
 };
-export default inertia;
+export default inertiaExpressAdapter;

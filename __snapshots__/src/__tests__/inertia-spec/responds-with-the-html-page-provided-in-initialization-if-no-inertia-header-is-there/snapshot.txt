@@ -1,0 +1,4 @@
+<!DOCTYPE html><html dir="ltr" lang="en">
+<head><meta charset="utf-8"><title>Inertia adapter</title></head>
+<body><div data-page='{"component":"app-home","props":{"name":1},"url":"/home","version":"1"}'></div>
+</body></html>

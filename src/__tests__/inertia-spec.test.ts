@@ -18,6 +18,16 @@ describe('Inertia adapter', () => {
     koa.sandbox.reset();
   });
 
+  it('responds with the html page provided in initialization if no inertia header is there', async ({
+    port,
+  }) => {
+    const result = await fetch(`http://localhost:${port}/home`, {
+      headers: {},
+    });
+    const html = await result.text()
+    expect(html).toMatchSnapshot()
+  });
+
   it('responds with a json response with encoded page object when inertia header is present and version is the same', async ({
     port,
     koa,

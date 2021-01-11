@@ -41,9 +41,6 @@ export function expressServer({ sandbox }: ServerOptions) {
 
     const router = express.Router()
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore this fixes a bug with session trying to access app.keys using this.keys
-    router.keys = app.keys;
     router.get('/flash', async (req, _res, next) => {
         // set session data
         req.flash.setFlashMessage('success', 'User created successfully');
