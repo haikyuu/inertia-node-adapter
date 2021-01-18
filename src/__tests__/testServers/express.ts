@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import express from 'express';
 import session from 'express-session';
 import stringify from 'json-stable-stringify';
@@ -42,24 +43,30 @@ export function expressServer({ sandbox }: ServerOptions) {
 
   router.get('/flash', async (req, _res, next) => {
     // set session data
+    //@ts-ignore
     req.flash.setFlashMessage('success', 'User created successfully');
+    //@ts-ignore
     req.Inertia.render(pages.home);
     return next();
   });
   router.get('/home', async (req, _res, next) => {
+    //@ts-ignore
     req.Inertia.render(pages.home);
     return next();
   });
 
   router.post('/home', async (req, _res, next) => {
+    //@ts-ignore
     req.Inertia.render(pages.home);
     return next();
   });
 
   router.get('/partial-optimized', async (req, _res, next) => {
     if (req.query?.redirect) {
+      //@ts-ignore
       await req.Inertia.render(pages.home);
     } else {
+      //@ts-ignore
       await req.Inertia.render(pages.partial);
     }
     return next();
@@ -70,6 +77,7 @@ export function expressServer({ sandbox }: ServerOptions) {
       version,
       html: getHtml,
       flashMessages: (req) => {
+        //@ts-ignore
         const messages = req.flash.flashAll();
         return messages;
       },

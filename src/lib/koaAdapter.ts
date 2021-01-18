@@ -1,5 +1,6 @@
 import debug from 'debug';
 import type {
+  Context,
   DefaultContext,
   DefaultState,
   Middleware,
@@ -30,7 +31,7 @@ export type Inertia = {
   readonly setStatusCode: (statusCode: number) => Inertia;
   readonly setHeaders: (headers: Record<string, string>) => Inertia;
   readonly render: (Page: Page) => Promise<Inertia>;
-  readonly redirect: (url: string) => Inertia;
+  readonly redirect: (url: string) => Context;
 };
 export const headers = {
   xInertia: 'x-inertia',
@@ -156,7 +157,7 @@ const inertia: (
           : 302;
         ctx.status = statusCode;
         ctx.set({ ..._headers, Location: url });
-        return this;
+        return ctx;
       },
     };
 

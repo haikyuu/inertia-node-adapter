@@ -8,7 +8,9 @@ export interface Flash<FlashMessageType extends string = string> {
   flashAll: () => Record<FlashMessageType, string[]>;
 }
 
-export type FlashMiddleware = () => RequestHandler;
+export type FlashMiddleware = <FlashMessageType extends string>(options?: {
+  initialize?: FlashMessageType[];
+}) => RequestHandler;
 
 /**
  * Registers a middleware responsible for managing flash messages.
@@ -17,7 +19,11 @@ export type FlashMiddleware = () => RequestHandler;
  *
  * @note It needs a session middleware in order to work. Has been tested with koa-session
  */
-const flash: FlashMiddleware = <FlashMessageType extends string = string>() => {
+const flash: FlashMiddleware = <FlashMessageType extends string = string>(
+  options: {
+    initialize?: FlashMessageType[];
+  } = {}
+) => {
   return async (req, _res, next) => {
     if (!req.session) {
       throw new Error(
@@ -97,6 +103,14 @@ const flash: FlashMiddleware = <FlashMessageType extends string = string>() => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     req.flash = new flash();
+    options.initialize?.forEach((type) => {
+      if (!req.session.flashMessages) {
+        req.session.flashMessages = {};
+      }
+      if (!req.session.flashMessages[type]) {
+        req.session.flashMessages[type] = [];
+      }
+    });
     return next();
   };
 };

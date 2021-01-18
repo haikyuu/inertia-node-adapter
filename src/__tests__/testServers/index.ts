@@ -8,6 +8,8 @@ import { koaServer } from './koa';
 export interface ServerOptions {
   sandbox: SinonSandbox;
 }
+
+
 export default function getServer(type: serverType, options: ServerOptions) {
   if (type === 'koa') {
     return koaServer(options);

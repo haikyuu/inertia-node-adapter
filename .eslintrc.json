@@ -5,7 +5,8 @@
     "project": "./tsconfig.json"
   },
   "env": {
-    "es6": true
+    "es6": true,
+    "commonjs": false
   },
   "ignorePatterns": [
     "node_modules",

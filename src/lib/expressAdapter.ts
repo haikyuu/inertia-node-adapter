@@ -1,13 +1,15 @@
 import debug from 'debug';
-import { Request, RequestHandler } from 'express';
+import { RequestHandler, Response } from 'express';
 
 const log = debug('inertia-node-adapter:express');
 
 type props = Record<string | number | symbol, unknown>;
+
 export type Options = {
+  readonly enableReload?: boolean;
   readonly version: string;
   readonly html: (page: Page, viewData: props) => string;
-  readonly flashMessages?: (req: Request<Record<string, unknown>>) => props;
+  readonly flashMessages?: (req: unknown) => props;
 };
 
 export type Page = {
@@ -21,8 +23,8 @@ export type Inertia = {
   readonly shareProps: (sharedProps: props) => Inertia;
   readonly setStatusCode: (statusCode: number) => Inertia;
   readonly setHeaders: (headers: Record<string, string>) => Inertia;
-  readonly render: (Page: Page) => Promise<Inertia>;
-  readonly redirect: (url: string) => Inertia;
+  readonly render: (Page: Page) => Promise<Response>;
+  readonly redirect: (url: string) => Response;
 };
 export const headers = {
   xInertia: 'x-inertia',
@@ -30,11 +32,13 @@ export const headers = {
   xInertiaLocation: 'x-inertia-location',
   xInertiaPartialData: 'x-inertia-partial-data',
   xInertiaPartialComponent: 'x-inertia-partial-component',
+  xInertiaCurrentComponent: 'x-inertia-current-component',
 };
 const inertiaExpressAdapter: (options: Options) => RequestHandler = function ({
   version,
   html,
   flashMessages,
+  enableReload = false,
 }) {
   return (req, res, next) => {
     if (
@@ -50,7 +54,7 @@ const inertiaExpressAdapter: (options: Options) => RequestHandler = function ({
     let _viewData = {};
     let _sharedProps: props = {};
     let _statusCode = 200;
-    let _headers = {};
+    let _headers: Record<string, string | string[] | undefined> = {};
 
     const Inertia: Inertia = {
       setViewData(viewData) {
@@ -69,10 +73,9 @@ const inertiaExpressAdapter: (options: Options) => RequestHandler = function ({
       },
 
       setHeaders(headers) {
-        _headers = { ..._headers, ...headers };
+        _headers = { ...req.headers, ..._headers, ...headers };
         return this;
       },
-
       async render({ props, ...pageRest }) {
         const _page: Page = {
           ...pageRest,
@@ -82,9 +85,13 @@ const inertiaExpressAdapter: (options: Options) => RequestHandler = function ({
         };
         log('rendering', _page);
         if (flashMessages) {
+          log('Flashing messages');
           this.shareProps(flashMessages(req));
         }
-
+        if (enableReload) {
+          log('Setting session for reloading components');
+          req.session.xInertiaCurrentComponent = pageRest.component;
+        }
         const allProps = { ..._sharedProps, ...props };
 
         let dataKeys;
@@ -101,7 +108,7 @@ const inertiaExpressAdapter: (options: Options) => RequestHandler = function ({
             _page.component
           );
           log(
-            'header component',
+            'header partial component',
             req.headers[headers.xInertiaPartialComponent]
           );
           dataKeys = Object.keys(allProps);
@@ -127,35 +134,42 @@ const inertiaExpressAdapter: (options: Options) => RequestHandler = function ({
           res
             .status(_statusCode)
             .set({
+              // ...req.headers,
               ..._headers,
               'Content-Type': 'application/json',
               [headers.xInertia]: 'true',
               Vary: 'Accept',
             })
             .send(JSON.stringify(_page));
+          log(`sent response with headers`);
+          log(res.getHeaders());
         } else {
           log('Sending the default html as no inertia header is present');
           res
             .status(_statusCode)
             .set({
+              ...req.headers,
               ..._headers,
               'Content-Type': 'text/html',
             })
             .send(html(_page, _viewData));
         }
-        return this;
+        return res;
       },
 
       redirect(url) {
         const statusCode = ['PUT', 'PATCH', 'DELETE'].includes(req.method)
           ? 303
           : 302;
-        res.status(statusCode).set({ ..._headers, Location: url });
-        return this;
+        res.redirect(statusCode, url);
+        log(`Redirecting to ${req.method} ${url}`);
+        return res;
       },
     };
 
-    (req as Request & { Inertia: Inertia }).Inertia = Inertia;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    req.Inertia = Inertia;
 
     return next();
   };
